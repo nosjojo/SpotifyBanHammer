@@ -1,0 +1,11 @@
+[project]
+name = "banhammer_service"
+version = "0.0.1"
+dependencies = [
+    "pynput",
+    "pywin32", "spotipy", "requests",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
