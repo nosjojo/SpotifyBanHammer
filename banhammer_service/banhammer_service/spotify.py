@@ -1,9 +1,9 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 import spotipy
 import logging
 logger = logging.getLogger("BanHammer")
 
-def find_playlist_by_name(session:spotipy.Spotify, name):
+def find_playlist_by_name(session:spotipy.Spotify, name:str) -> Union[Dict, None]:
     playlists = session.current_user_playlists()
     while True:
         for playlist in playlists['items']:
@@ -73,7 +73,6 @@ def chunk_generator(lst, n) -> List:
 
 
 def sanitize_new_music_friday(session:spotipy.Spotify, ban_list_file):
-    # "New Music Friday":"37i9dQZF1DX4JAvHpjipBk"
     ban_list = load_ban_list(ban_list_file)
     playlist = session.playlist_items(find_playlist_by_name(session,
         'New Music Friday')['id'], market='US')

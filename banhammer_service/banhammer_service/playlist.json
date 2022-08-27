@@ -1,0 +1,46 @@
+{
+    "collaborative": false,
+    "description": "",
+    "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/3hVCpZck2BISuhX0vq0WbT"
+    },
+    "href": "https://api.spotify.com/v1/playlists/3hVCpZck2BISuhX0vq0WbT",
+    "id": "3hVCpZck2BISuhX0vq0WbT",
+    "images": [
+        {
+            "height": 640,
+            "url": "https://mosaic.scdn.co/640/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b273a1a6383070526cecb1842bd0ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
+            "width": 640
+        },
+        {
+            "height": 300,
+            "url": "https://mosaic.scdn.co/300/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b273a1a6383070526cecb1842bd0ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
+            "width": 300
+        },
+        {
+            "height": 60,
+            "url": "https://mosaic.scdn.co/60/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b273a1a6383070526cecb1842bd0ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
+            "width": 60
+        }
+    ],
+    "name": "Better New Music Friday",
+    "owner": {
+        "display_name": "Justin Goodman",
+        "external_urls": {
+            "spotify": "https://open.spotify.com/user/nosjojo"
+        },
+        "href": "https://api.spotify.com/v1/users/nosjojo",
+        "id": "nosjojo",
+        "type": "user",
+        "uri": "spotify:user:nosjojo"
+    },
+    "primary_color": null,
+    "public": false,
+    "snapshot_id": "NzAsNzdiNmUwNTQyNzI2OGZmOTRiZWRjMTQyZGQyZDY2MmZkZjcyNjlkYg==",
+    "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/3hVCpZck2BISuhX0vq0WbT/tracks",
+        "total": 84
+    },
+    "type": "playlist",
+    "uri": "spotify:playlist:3hVCpZck2BISuhX0vq0WbT"
+}
