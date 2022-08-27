@@ -15,7 +15,7 @@ if not user_dir.exists():
     user_dir.mkdir(parents=True, exist_ok=True)
 
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(log_file)
+handler = logging.FileHandler(log_file, encoding='utf-8')
 logger.addHandler(handler)
 logger.info("Log started.")
 
@@ -49,3 +49,4 @@ if __name__ == "__main__":
         listener.join()
 
 # NEED TO MAKE THE BAN LIST A DATABASE WITH AN ARTIST TABLE AND A SONG TABLE.
+# NEED TO MAKE THE SCRIPT RECOVERABLE FROM TIMEOUT ERRORS.

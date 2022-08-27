@@ -75,11 +75,11 @@ def chunk_generator(lst, n) -> List:
 def sanitize_new_music_friday(session:spotipy.Spotify, ban_list_file):
     # "New Music Friday":"37i9dQZF1DX4JAvHpjipBk"
     ban_list = load_ban_list(ban_list_file)
-    playlist = session.playlist_items(find_playlist_by_name(
+    playlist = session.playlist_items(find_playlist_by_name(session,
         'New Music Friday')['id'], market='US')
-    cleaned_playlist = find_playlist_by_name('Better New Music Friday')
-    clear_playlist(cleaned_playlist)
-    rebuild_playlist(cleaned_playlist['id'],
+    cleaned_playlist = find_playlist_by_name(session,'Better New Music Friday')
+    clear_playlist(session, cleaned_playlist)
+    rebuild_playlist(session, cleaned_playlist['id'],
                      filter_playlist(playlist, ban_list))
 
 def remove_song_from_playlist(session:spotipy.Spotify, playlist_uri, song_uri):
