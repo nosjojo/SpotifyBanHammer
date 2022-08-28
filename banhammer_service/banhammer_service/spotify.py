@@ -1,9 +1,10 @@
+from banhammer_service.database import SpotifyDB
 from utility import *
 from typing import Dict, List, Union
 import spotipy
 import logging
 logger = logging.getLogger("BanHammer")
-from objects import Playlist, Track
+from objects import Playlist, Track, Artist
 
 def find_playlists_by_name(session:spotipy.Spotify, name:str) -> List[Union[Playlist, None]]:
     """Attempts to the find playlists identified by the provided name. Will return
@@ -37,11 +38,12 @@ def load_ban_list(file: str) -> Dict:
             banned_artists[id.strip()] = artist.strip()
     return banned_artists
 
-def add_entry_to_banlist(file:str, name, id) -> None:
-    
-    with open(file, 'a+', encoding="UTF-8") as f:
-        f.write(f"{name},{id}\n")
-
+def add_entry_to_banlist(db:SpotifyDB, entry:Union[Track, Artist], target:str) -> None:
+    if (target == "artist"):
+        x=Artist(entry['item']['artists'][0])
+        db.ban_artist(entry)
+    elif (target == "track"):
+        db.ban_track(Track(entry['item']))
 
 def get_playlist_tracks(session:spotipy.Spotify, playlist:Playlist) -> Playlist:
     """Gets the playlist tracks for the passed Playlist object. Updates the Playlist object by
@@ -120,24 +122,26 @@ def remove_song_from_playlist(session:spotipy.Spotify, playlist_uri, song_uri):
     except spotipy.SpotifyException as e:
             logging.info(e.args)
 
-def ban_current_playing_song(session:spotipy.Spotify, ban_db:str):
+def ban_current_playing_song(session:spotipy.Spotify, ban_db:SpotifyDB):
     current = session.current_playback()
+    current['item'] = Track(current['item'])
     if current:
         name, id = (current['item']['name'], current['item']['id'])
-        logger.info(f"banning {name}, {id}")
+        #logger.info(f"banning {name}, {id}")
         if current['context']['type']=='playlist':
             _,_, context_id = current['context']['uri'].split(":")
             remove_song_from_playlist(session,context_id,[id])
-        add_entry_to_banlist(ban_file, name, id)
+        add_entry_to_banlist(ban_db, current, 'track')
         session.next_track()
     
 def ban_current_playing_artist(session:spotipy.Spotify, ban_file:str):
     current = session.current_playback()
+    current['item'] = Track(current['item'])
     if current:
         name, id, song_id = (current['item']['artists'][0]['name'], current['item']['artists'][0]['id'], current['item']['id'])
-        logger.info(f"banning {name}, {id}")
+        #logger.info(f"banning {name}, {id}")
         if current['context']['type']=='playlist':
             _,_, context_id = current['context']['uri'].split(":")
             remove_song_from_playlist(session,context_id,[song_id])
-        add_entry_to_banlist(ban_file, name, id)
+        add_entry_to_banlist(ban_file, current, 'artist')
         session.next_track()

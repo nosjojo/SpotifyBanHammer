@@ -9,7 +9,7 @@ import sqlite3
 
 
 logger = logging.getLogger("BanHammer")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
 logger.addHandler(handler)
 logger.info("Log started.")
