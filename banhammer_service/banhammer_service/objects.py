@@ -3,6 +3,12 @@ from typing import Any
 class Response(dict):
     def __getattr__(self, item):
         return self.get(item)
+    
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if self.get(__name):
+            self[__name] = __value
+        else:
+            super().__setattr__(__name, __value)
 
 class Playlist(Response):
     def filter_playlist(self):

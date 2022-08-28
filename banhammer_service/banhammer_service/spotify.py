@@ -1,14 +1,27 @@
+from utility import *
 from typing import Dict, List, Union
 import spotipy
 import logging
 logger = logging.getLogger("BanHammer")
+from objects import Playlist, Track
 
-def find_playlist_by_name(session:spotipy.Spotify, name:str) -> Union[Dict, None]:
+def find_playlist_by_name(session:spotipy.Spotify, name:str) -> Union[Playlist, None]:
+    """Attempts to the find playlist identified by the provided name. Will return the first
+    
+
+    Args:
+        session (spotipy.Spotify): _description_
+        name (str): _description_
+
+    Returns:
+        Union[Playlist, None]: _description_
+    """
     playlists = session.current_user_playlists()
+
     while True:
         for playlist in playlists['items']:
             if name == playlist['name']:
-                return playlist
+                return Playlist(playlist)
 
         playlists = session.next(playlists)
         if not playlists:
@@ -28,6 +41,24 @@ def add_entry_to_banlist(file:str, name, id) -> None:
     with open(file, 'a+', encoding="UTF-8") as f:
         f.write(f"{name},{id}\n")
 
+
+def get_playlist_tracks(session:spotipy.Spotify, playlist:Playlist) -> Playlist:
+    """Gets the playlist tracks for the passed Playlist object. Updates the Playlist object by
+    inserting the result into the Playlist.tracks field. The structure of the response is
+    equivalent to the API Get-Playlist-Items call, but all track entries will be of type Track.
+
+    Args:
+        session (spotipy.Spotify): The active user session
+        playlist (Playlist): The playlist to fetch tracks for
+
+    Returns:
+        Playlist: Updated playlist with track contents.
+    """
+    playlist_tracks = session.playlist_items(playlist.id)
+    for i,track in enumerate(playlist_tracks['items']):
+        playlist_tracks['items'][i]=Track(track)
+    playlist.tracks = playlist_tracks
+    return playlist
 
 def filter_playlist(playlist: Dict, ban_list) -> None:
     removal_list = []

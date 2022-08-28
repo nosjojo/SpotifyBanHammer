@@ -9,17 +9,17 @@
     "images": [
         {
             "height": 640,
-            "url": "https://mosaic.scdn.co/640/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b273a1a6383070526cecb1842bd0ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
+            "url": "https://mosaic.scdn.co/640/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b2735d872e7b0c1ba964541f07e8ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
             "width": 640
         },
         {
             "height": 300,
-            "url": "https://mosaic.scdn.co/300/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b273a1a6383070526cecb1842bd0ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
+            "url": "https://mosaic.scdn.co/300/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b2735d872e7b0c1ba964541f07e8ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
             "width": 300
         },
         {
             "height": 60,
-            "url": "https://mosaic.scdn.co/60/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b273a1a6383070526cecb1842bd0ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
+            "url": "https://mosaic.scdn.co/60/ab67616d0000b27336fd765df91eeebe44c30810ab67616d0000b2735d872e7b0c1ba964541f07e8ab67616d0000b273b9add8933d2141076f745f73ab67616d0000b273cdecf8e63b14f942df07fe13",
             "width": 60
         }
     ],
@@ -36,10 +36,10 @@
     },
     "primary_color": null,
     "public": false,
-    "snapshot_id": "NzAsNzdiNmUwNTQyNzI2OGZmOTRiZWRjMTQyZGQyZDY2MmZkZjcyNjlkYg==",
+    "snapshot_id": "ODUsZDFjMTA3NjJlOTg0YmI0NTUxM2YwNzUyNjA3ZDJmMWFlNzdmY2RjNg==",
     "tracks": {
         "href": "https://api.spotify.com/v1/playlists/3hVCpZck2BISuhX0vq0WbT/tracks",
-        "total": 84
+        "total": 69
     },
     "type": "playlist",
     "uri": "spotify:playlist:3hVCpZck2BISuhX0vq0WbT"
