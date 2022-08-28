@@ -5,28 +5,28 @@ import logging
 logger = logging.getLogger("BanHammer")
 from objects import Playlist, Track
 
-def find_playlist_by_name(session:spotipy.Spotify, name:str) -> Union[Playlist, None]:
-    """Attempts to the find playlist identified by the provided name. Will return the first
+def find_playlists_by_name(session:spotipy.Spotify, name:str) -> List[Union[Playlist, None]]:
+    """Attempts to the find playlists identified by the provided name. Will return
+    a list of all playlists with that string name. If no match is found, an empty list is returned.
     
-
     Args:
-        session (spotipy.Spotify): _description_
-        name (str): _description_
+        session (spotipy.Spotify): The active user session
+        name (str): Playlist name to locate
 
     Returns:
-        Union[Playlist, None]: _description_
+        List[Union[Playlist, None]]: All found playlists, or an empty list if None. 
     """
+    results = []
     playlists = session.current_user_playlists()
-
     while True:
         for playlist in playlists['items']:
-            if name == playlist['name']:
-                return Playlist(playlist)
+            _playlist = Playlist(playlist)
+            if name == _playlist.name:
+                results.append(_playlist)
 
         playlists = session.next(playlists)
         if not playlists:
-            return None
-
+            return results
 
 def load_ban_list(file: str) -> Dict:
     banned_artists = {}
@@ -38,6 +38,7 @@ def load_ban_list(file: str) -> Dict:
     return banned_artists
 
 def add_entry_to_banlist(file:str, name, id) -> None:
+    
     with open(file, 'a+', encoding="UTF-8") as f:
         f.write(f"{name},{id}\n")
 
@@ -59,6 +60,7 @@ def get_playlist_tracks(session:spotipy.Spotify, playlist:Playlist) -> Playlist:
         playlist_tracks['items'][i]=Track(track)
     playlist.tracks = playlist_tracks
     return playlist
+
 
 def filter_playlist(playlist: Dict, ban_list) -> None:
     removal_list = []
@@ -105,9 +107,9 @@ def chunk_generator(lst, n) -> List:
 
 def sanitize_new_music_friday(session:spotipy.Spotify, ban_list_file):
     ban_list = load_ban_list(ban_list_file)
-    playlist = session.playlist_items(find_playlist_by_name(session,
-        'New Music Friday')['id'], market='US')
-    cleaned_playlist = find_playlist_by_name(session,'Better New Music Friday')
+    playlist = session.playlist_items(find_playlists_by_name(session,
+        'New Music Friday')[0]['id'], market='US')
+    cleaned_playlist = find_playlists_by_name(session,'Better New Music Friday')[0]
     clear_playlist(session, cleaned_playlist)
     rebuild_playlist(session, cleaned_playlist['id'],
                      filter_playlist(playlist, ban_list))
@@ -118,7 +120,7 @@ def remove_song_from_playlist(session:spotipy.Spotify, playlist_uri, song_uri):
     except spotipy.SpotifyException as e:
             logging.info(e.args)
 
-def ban_current_playing_song(session:spotipy.Spotify, ban_file:str):
+def ban_current_playing_song(session:spotipy.Spotify, ban_db:str):
     current = session.current_playback()
     if current:
         name, id = (current['item']['name'], current['item']['id'])

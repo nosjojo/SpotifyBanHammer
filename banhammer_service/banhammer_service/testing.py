@@ -43,7 +43,7 @@ if __name__ == "__main__":
             
     sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, open_browser=False))
     the_hammer = BanHammer(session=sp, ban_file=ban_file)
-    playlist = Playlist(spotify.find_playlist_by_name(sp, "Better New Music Friday"))
+    playlist = spotify.find_playlists_by_name(sp, "Better New Music Friday")
     utility.dump_response_to_file(playlist, "example_single_playlist")
     result = spotify.get_playlist_tracks(sp, playlist)
     print("")
