@@ -1,15 +1,16 @@
+from objects import Playlist, Track, Artist, Tracklist
 from banhammer_service.database import SpotifyDB
 from utility import *
 from typing import Dict, List, Union
 import spotipy
 import logging
 logger = logging.getLogger("BanHammer")
-from objects import Playlist, Track, Artist
 
-def find_playlists_by_name(session:spotipy.Spotify, name:str) -> List[Union[Playlist, None]]:
+
+def find_playlists_by_name(session: spotipy.Spotify, name: str) -> List[Union[Playlist, None]]:
     """Attempts to the find playlists identified by the provided name. Will return
     a list of all playlists with that string name. If no match is found, an empty list is returned.
-    
+
     Args:
         session (spotipy.Spotify): The active user session
         name (str): Playlist name to locate
@@ -29,6 +30,7 @@ def find_playlists_by_name(session:spotipy.Spotify, name:str) -> List[Union[Play
         if not playlists:
             return results
 
+
 def load_ban_list(file: str) -> Dict:
     banned_artists = {}
     with open(file, 'rt', encoding="UTF-8") as f:
@@ -38,14 +40,15 @@ def load_ban_list(file: str) -> Dict:
             banned_artists[id.strip()] = artist.strip()
     return banned_artists
 
-def add_entry_to_banlist(db:SpotifyDB, entry:Union[Track, Artist], target:str) -> None:
+
+def add_entry_to_banlist(db: SpotifyDB, entry: Union[Track, Artist], target: str) -> None:
     if (target == "artist"):
-        x=Artist(entry['item']['artists'][0])
-        db.ban_artist(entry)
+        db.ban_artist(Artist(entry['item']['artists'][0]))
     elif (target == "track"):
         db.ban_track(Track(entry['item']))
 
-def get_playlist_tracks(session:spotipy.Spotify, playlist:Playlist) -> Playlist:
+
+def get_playlist_tracks(session: spotipy.Spotify, playlist: Playlist) -> Playlist:
     """Gets the playlist tracks for the passed Playlist object. Updates the Playlist object by
     inserting the result into the Playlist.tracks field. The structure of the response is
     equivalent to the API Get-Playlist-Items call, but all track entries will be of type Track.
@@ -58,27 +61,30 @@ def get_playlist_tracks(session:spotipy.Spotify, playlist:Playlist) -> Playlist:
         Playlist: Updated playlist with track contents.
     """
     playlist_tracks = session.playlist_items(playlist.id)
-    for i,track in enumerate(playlist_tracks['items']):
-        playlist_tracks['items'][i]=Track(track)
+    playlist_tracks = Tracklist(playlist_tracks)
     playlist.tracks = playlist_tracks
     return playlist
 
 
-def filter_playlist(playlist: Dict, ban_list) -> None:
+def filter_playlist(playlist: Playlist, ban_list) -> None:
     removal_list = []
     # <listing all tracks here>
-    for idx, entry in enumerate(playlist['items']):
-        track_artists = entry['track']['artists']
-        for artist in track_artists:  # <perform artist check here>
-            if artist['id'] in ban_list:
-                print(f"Removing entry for {artist['name']} - {artist['id']}")
-                removal_list.append(idx)
+    track: Track
+    for idx, track in enumerate(playlist.tracks.tracks):
+        if track:
+            for artist in track.artists:  # <perform artist check here>
+                if artist['id'] in ban_list:
+                    print(
+                        f"Removing entry for {artist['name']} - {artist['id']}")
+                    removal_list.append(idx)
+        else:
+            removal_list.append(idx)  # remove tracks that aren't detected
     for idx in removal_list:
-        del playlist['items'][idx]
+        del playlist.tracks[idx]
     return playlist
 
 
-def clear_playlist(session:spotipy.Spotify, playlist) -> None:
+def clear_playlist(session: spotipy.Spotify, playlist) -> None:
     track_id_list = []
     tracks = session.playlist_items(playlist['id'])
     while True:
@@ -93,10 +99,11 @@ def clear_playlist(session:spotipy.Spotify, playlist) -> None:
             playlist['id'], track_chunk)
 
 
-def rebuild_playlist(session:spotipy.Spotify, playlist_id, playlist):
+def rebuild_playlist(session: spotipy.Spotify, playlist_id, playlist: Playlist):
     rebuild_list = []
-    for item in playlist['items']:
-        rebuild_list.append(item['track']['uri'])
+    track: Track
+    for track in playlist.tracks.tracks:
+        rebuild_list.append(track.uri)
 
     for track_chunk in chunk_generator(rebuild_list, 100):
         session.playlist_add_items(playlist_id, track_chunk)
@@ -107,41 +114,45 @@ def chunk_generator(lst, n) -> List:
         yield lst[i:i+n]
 
 
-def sanitize_new_music_friday(session:spotipy.Spotify, ban_list_file):
+def sanitize_new_music_friday(session: spotipy.Spotify, ban_list_file):
     ban_list = load_ban_list(ban_list_file)
-    playlist = session.playlist_items(find_playlists_by_name(session,
-        'New Music Friday')[0]['id'], market='US')
-    cleaned_playlist = find_playlists_by_name(session,'Better New Music Friday')[0]
+    playlist = find_playlists_by_name(session, 'New Music Friday')[0]
+    playlist = get_playlist_tracks(session, playlist)
+    cleaned_playlist = find_playlists_by_name(
+        session, 'Better New Music Friday')[0]
     clear_playlist(session, cleaned_playlist)
-    rebuild_playlist(session, cleaned_playlist['id'],
-                     filter_playlist(playlist, ban_list))
+    filter_playlist(playlist, ban_list)
+    rebuild_playlist(session, cleaned_playlist.id, playlist)
 
-def remove_song_from_playlist(session:spotipy.Spotify, playlist_uri, song_uri):
+
+def remove_song_from_playlist(session: spotipy.Spotify, playlist_uri, song_uri):
     try:
-        session.playlist_remove_all_occurrences_of_items(playlist_uri, song_uri)
+        session.playlist_remove_all_occurrences_of_items(
+            playlist_uri, song_uri)
     except spotipy.SpotifyException as e:
-            logging.info(e.args)
+        logging.info(e.args)
 
-def ban_current_playing_song(session:spotipy.Spotify, ban_db:SpotifyDB):
+
+def ban_current_playing_song(session: spotipy.Spotify, ban_db: SpotifyDB):
     current = session.current_playback()
     current['item'] = Track(current['item'])
     if current:
         name, id = (current['item']['name'], current['item']['id'])
-        #logger.info(f"banning {name}, {id}")
-        if current['context']['type']=='playlist':
-            _,_, context_id = current['context']['uri'].split(":")
-            remove_song_from_playlist(session,context_id,[id])
+        if current['context']['type'] == 'playlist':
+            _, _, context_id = current['context']['uri'].split(":")
+            remove_song_from_playlist(session, context_id, [id])
         add_entry_to_banlist(ban_db, current, 'track')
         session.next_track()
-    
-def ban_current_playing_artist(session:spotipy.Spotify, ban_file:str):
+
+
+def ban_current_playing_artist(session: spotipy.Spotify, ban_file: str):
     current = session.current_playback()
     current['item'] = Track(current['item'])
     if current:
-        name, id, song_id = (current['item']['artists'][0]['name'], current['item']['artists'][0]['id'], current['item']['id'])
-        #logger.info(f"banning {name}, {id}")
-        if current['context']['type']=='playlist':
-            _,_, context_id = current['context']['uri'].split(":")
-            remove_song_from_playlist(session,context_id,[song_id])
+        name, id, song_id = (current['item']['artists'][0]['name'],
+                             current['item']['artists'][0]['id'], current['item']['id'])
+        if current['context']['type'] == 'playlist':
+            _, _, context_id = current['context']['uri'].split(":")
+            remove_song_from_playlist(session, context_id, [song_id])
         add_entry_to_banlist(ban_file, current, 'artist')
         session.next_track()
