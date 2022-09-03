@@ -1,12 +1,14 @@
 import logging
 import spotipy
+from PyQt5.QtWidgets import QApplication
+from banhammer_service.mainwindow import MainWindow
 from spotipy.oauth2 import SpotifyOAuth
 from pynput.keyboard import KeyCode, Listener
 from banhammer_service import LOG_FILE, BAN_FILE, BAN_DB
 from banhammer_service.keyboard import *
 from banhammer_service.banhammer import BanHammer
 import sqlite3
-
+import sys
 
 logger = logging.getLogger("BanHammer")
 logger.setLevel(logging.DEBUG)
@@ -36,16 +38,11 @@ if __name__ == "__main__":
              "user-library-modify,"
              "user-library-read")
 
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-        scope=scope, open_browser=False))
-    #spotify.sanitize_new_music_friday(sp, BAN_FILE)
-    the_hammer = BanHammer(session=sp, ban_file=BAN_FILE, ban_database=ban_db)
-    bindings = {frozenset([KeyCode(vk=160), KeyCode(vk=162), KeyCode(vk=46)]): the_hammer.ban_current_artist,
-                frozenset([KeyCode(vk=160), KeyCode(vk=162), KeyCode(vk=8)]): the_hammer.ban_current_song}
-    kb = KeyBindings()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
-    with Listener(on_press=kb.on_press, on_release=kb.on_release) as listener:
-        kb.set_hotkeys(bindings)
-        listener.join()
+
 
 # NEED TO MAKE THE SCRIPT RECOVERABLE FROM TIMEOUT ERRORS.
