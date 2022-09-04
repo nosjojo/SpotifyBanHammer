@@ -1,4 +1,6 @@
-class KeyBindings:
+from PyQt5.QtCore import QObject, pyqtSlot
+
+class KeyBindings(QObject):
     def __init__(self) -> None:
         self.combination_to_function = {}
         self.pressed_vks = set()
@@ -22,3 +24,6 @@ class KeyBindings:
     def on_release(self,key):
         vk = self.get_vk(key)  # Get the key's vk
         self.pressed_vks.discard(vk)  # Remove it from the set of currently pressed keys
+    
+    def stop_listener(self):
+        self.terminate = True

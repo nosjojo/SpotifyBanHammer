@@ -18,6 +18,9 @@ class Ui_SpotifyBanHammer(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
+        self.get_session_btn = QtWidgets.QPushButton(self.centralwidget)
+        self.get_session_btn.setObjectName("get_session_btn")
+        self.verticalLayout.addWidget(self.get_session_btn)
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -64,6 +67,7 @@ class Ui_SpotifyBanHammer(object):
     def retranslateUi(self, SpotifyBanHammer):
         _translate = QtCore.QCoreApplication.translate
         SpotifyBanHammer.setWindowTitle(_translate("SpotifyBanHammer", "Spotify Ban Hammer"))
+        self.get_session_btn.setText(_translate("SpotifyBanHammer", "Get Session"))
         self.pushButton_2.setText(_translate("SpotifyBanHammer", "Ban Artist"))
         self.pushButton.setText(_translate("SpotifyBanHammer", "Sanitize Playlist"))
         self.start_hotkeys_btn.setText(_translate("SpotifyBanHammer", "Start Hotkeys"))
